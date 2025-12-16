@@ -1,0 +1,19 @@
+{
+  "name": "design/design",
+  "type": "project",
+  "require": {
+    "php": "^8.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Design\\": "Src/",
+      "Design\\Settings\\": "Settings/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  }
+}

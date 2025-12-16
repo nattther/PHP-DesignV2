@@ -1,0 +1,24 @@
+Options -Indexes
+ServerSignature Off
+
+RewriteEngine On
+
+# Bloquer l'accès web aux dossiers sensibles
+RewriteRule ^(Settings|Src|vendor|Tests|Logs)(/|$) - [F,L]
+
+# Bloquer quelques fichiers sensibles
+RewriteRule ^(\.env|composer\.json|composer\.lock|phpunit\.xml)(/|$) - [F,L]
+
+# Bloquer les dotfiles (.git, etc.)
+RewriteRule (^|/)\. - [F,L]
+
+# Empêcher l'indexation (en + de robots.txt)
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow, nosnippet, noarchive"
+</IfModule>
+
+# Router tout vers index.php si ce n'est pas un fichier réel
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule ^ index.php [L]
