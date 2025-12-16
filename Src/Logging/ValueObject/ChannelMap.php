@@ -57,6 +57,7 @@ final readonly class ChannelMap
             'Database' => 'Database.log',
             'Audit' => 'Audit.log',
             'Http' => 'Http.log',
+            'Session' => 'Session.log',
         ]);
     }
 
