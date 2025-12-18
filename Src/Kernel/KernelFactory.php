@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Design\Kernel;
 
+use Design\Database\Initializer\DatabaseInitializerFactory;
 use Design\Logging\LoggerFactory;
 use Design\Logging\LoggerInterface;
 use Design\Security\Csrf\CsrfTokenManagerFactory;
@@ -32,9 +33,11 @@ final class KernelFactory
             $server = $_SERVER ?? [];
         }
 
-
         $settings = SettingsFactory::create(server: $server);
 
+        $initializer = DatabaseInitializerFactory::create($settings->database());
+        $initializer->initialize();
+        
         $logger = self::buildLogger($settings);
         $session = self::buildSession($context, $settings, $logger);
         $flash = new SessionFlashBag($session);
