@@ -12,9 +12,13 @@ use Design\Logging\Policy\DefaultChannelPolicy;
 use Design\Logging\Context\JsonContextEncoder;
 use Design\Logging\ValueObject\ChannelMap;
 use Design\Logging\Writer\FileWriterInterface;
+use Design\Session\Config\SessionConfig;
+use Design\Session\Config\SessionConfigurator;
 use Design\Session\NativeSessionManager;
-use Design\Session\SessionConfig;
-use Design\Session\SessionException;
+use Design\Session\Php\PhpSessionRuntime;
+use Design\Session\Security\SensitiveKeyRedactor;
+use Design\Session\Exception\SessionException;
+use Design\Session\Flash\SessionFlashBag;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -33,6 +37,9 @@ final class SessionSmokeTest extends TestCase
         try {
             [$session, $writer] = $this->buildSessionWithInMemoryLogger($tmpRoot);
 
+            // Flash is now separate
+            $flash = new SessionFlashBag($session);
+
             // Start
             $session->start();
             self::assertTrue($session->isStarted());
@@ -46,10 +53,10 @@ final class SessionSmokeTest extends TestCase
             self::assertFalse($session->has('user_id'));
             self::assertSame('default', $session->get('user_id', 'default'));
 
-            // Flash
-            $session->flash('success', 'Welcome!');
-            self::assertSame('Welcome!', $session->consumeFlash('success'));
-            self::assertSame('none', $session->consumeFlash('success', 'none'));
+            // Flash (separate object)
+            $flash->set('success', 'Welcome!');
+            self::assertSame('Welcome!', $flash->consume('success'));
+            self::assertSame('none', $flash->consume('success', 'none'));
 
             // Sensitive key should be redacted in logs (and value must never appear)
             $session->set('token', 'SECRET_TOKEN');
@@ -74,8 +81,6 @@ final class SessionSmokeTest extends TestCase
 
             self::assertStringContainsString('Session started', $allLogs);
             self::assertStringContainsString('Session key set', $allLogs);
-            self::assertStringContainsString('Flash set', $allLogs);
-            self::assertStringContainsString('Flash consumed', $allLogs);
             self::assertStringContainsString('Session id regenerated', $allLogs);
             self::assertStringContainsString('Session cleared', $allLogs);
             self::assertStringContainsString('Session destroyed', $allLogs);
@@ -108,7 +113,6 @@ final class SessionSmokeTest extends TestCase
 
             // It must also log the error
             $allLogs = implode("\n", array_map(static fn($w) => $w['content'], $writer->writes));
-
             self::assertStringContainsString('Session not started', $allLogs);
 
             // And logs should still be written to Session.log
@@ -153,7 +157,15 @@ final class SessionSmokeTest extends TestCase
             useStrictMode: true,
         );
 
-        return [new NativeSessionManager($config, $logger), $writer];
+        $session = new NativeSessionManager(
+            config: $config,
+            logger: $logger,
+            runtime: new PhpSessionRuntime(),
+            configurator: new SessionConfigurator(),
+            redactor: new SensitiveKeyRedactor(['password', 'token', 'csrf', 'auth', 'jwt']),
+        );
+
+        return [$session, $writer];
     }
 
     private function deleteDir(string $dir): void

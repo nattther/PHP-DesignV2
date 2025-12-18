@@ -26,13 +26,6 @@ interface SessionManagerInterface
     public function clear(): void;
 
     /**
-     * Stores a value for one request and removes it when read.
-     */
-    public function flash(string $key, mixed $value): void;
-
-    public function consumeFlash(string $key, mixed $default = null): mixed;
-
-    /**
      * Regenerates the session id (useful after login).
      */
     public function regenerate(bool $deleteOldSession = true): void;

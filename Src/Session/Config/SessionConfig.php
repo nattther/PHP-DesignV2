@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Design\Session;
+namespace Design\Session\Config;
 
 /**
  * Immutable session configuration used by the SessionManager.
@@ -19,7 +19,7 @@ final readonly class SessionConfig
         public string $cookieDomain,
         public bool $cookieSecure,
         public bool $cookieHttpOnly,
-        public string $cookieSameSite, // Lax|Strict|None
+        public string $cookieSameSite,
         public bool $useStrictMode,
     ) {}
 }

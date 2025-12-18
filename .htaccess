@@ -1,7 +1,9 @@
 Options -Indexes
 ServerSignature Off
-
 RewriteEngine On
+
+# Endpoint health (AVANT le router)
+RewriteRule ^health/?$ health.php [L]
 
 # Bloquer l'accès web aux dossiers sensibles
 RewriteRule ^(Settings|Src|vendor|Tests|Logs)(/|$) - [F,L]
