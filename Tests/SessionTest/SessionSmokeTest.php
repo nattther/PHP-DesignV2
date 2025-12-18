@@ -23,6 +23,9 @@ use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
+use Design\Tests\Support\FakeClock;
+use Design\Tests\Support\InMemoryWriter;
+
 
 final class SessionSmokeTest extends TestCase
 {
@@ -187,25 +190,4 @@ final class SessionSmokeTest extends TestCase
     }
 }
 
-/** Fake clock for predictable timestamps in logs. */
-final readonly class FakeClock implements \Design\Logging\Clock\ClockInterface
-{
-    public function __construct(private string $iso8601) {}
 
-    public function nowIso8601(): string
-    {
-        return $this->iso8601;
-    }
-}
-
-/** Writer that stores writes in memory (no filesystem). */
-final class InMemoryWriter implements FileWriterInterface
-{
-    /** @var array<int, array{path: string, content: string}> */
-    public array $writes = [];
-
-    public function append(string $filePath, string $content): void
-    {
-        $this->writes[] = ['path' => $filePath, 'content' => $content];
-    }
-}

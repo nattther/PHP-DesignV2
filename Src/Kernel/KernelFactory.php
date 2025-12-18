@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Design\Kernel;
 
+use Design\Auth\AuthManagerFactory;
 use Design\Database\Initializer\DatabaseInitializerFactory;
 use Design\Logging\LoggerFactory;
 use Design\Logging\LoggerInterface;
@@ -35,11 +36,31 @@ final class KernelFactory
 
         $settings = SettingsFactory::create(server: $server);
 
-        $initializer = DatabaseInitializerFactory::create($settings->database());
-        $initializer->initialize();
-        
+        // Logger en premier
         $logger = self::buildLogger($settings);
+        
+        // DB init avec logs    
+        $initializer = DatabaseInitializerFactory::create(
+            $settings->database(),
+            $logger->channel('Database')
+        );
+        $initializer->initialize();
+
+        // Session
         $session = self::buildSession($context, $settings, $logger);
+
+        if (!$session->isStarted() && !($session instanceof NoopSessionManager)) {
+            $session->start();
+        }
+
+        // Auth
+        $auth = AuthManagerFactory::create($logger)->resolve();
+
+        $logger->channel('Auth')->info('Auth resolved', [
+            'mode' => $auth->mode,
+            'authenticated' => $auth->authenticated,
+        ]);
+
         $flash = new SessionFlashBag($session);
         $csrf  = CsrfTokenManagerFactory::create($context, $session);
 
@@ -49,9 +70,11 @@ final class KernelFactory
             session: $session,
             flash: $flash,
             csrf: $csrf,
+            auth: $auth,
             context: $context,
         );
     }
+
 
     public static function createForFront(array $server = []): Kernel
     {
@@ -87,8 +110,8 @@ final class KernelFactory
 
     private static function buildLogger(Settings $settings): LoggerInterface
     {
-            $projectRoot = $settings->paths()->rootPath;
-    return (new LoggerFactory($projectRoot))->create();
+        $projectRoot = $settings->paths()->rootPath;
+        return (new LoggerFactory($projectRoot))->create();
     }
 
     private static function buildSession(KernelContext $context, Settings $settings, LoggerInterface $logger): SessionManagerInterface

@@ -21,6 +21,9 @@ use Design\Logging\ValueObject\ChannelMap;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
+use Design\Tests\Support\FakeClock;
+use Design\Tests\Support\InMemoryWriter;
+
 
 final class CsrfTokenManagerTest extends TestCase
 {
@@ -79,10 +82,12 @@ final class CsrfTokenManagerTest extends TestCase
         $resolver = new FilePathResolver($logsDir, ChannelMap::defaults());
 
         $logger = new FileLogger(
-            clock: new \Design\Tests\SessionTest\FakeClock('2025-12-16T10:00:00+01:00'),
+            clock: new FakeClock('2025-12-16T10:00:00+01:00'),
+
+
             pathResolver: $resolver,
             formatter: new SimpleLogLineFormatter(new JsonContextEncoder()),
-            writer: new \Design\Tests\SessionTest\InMemoryWriter(),
+            writer: new InMemoryWriter(),
             channelPolicy: DefaultChannelPolicy::standard(),
         );
 

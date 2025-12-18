@@ -33,16 +33,15 @@ final class FlashBagTest extends TestCase
         self::assertSame('missing', $flash->consume('a', 'missing'));
         self::assertSame('missing', $flash->consume('b', 'missing'));
     }
-
-    #[TestDox('Test de Flash erreurs — OK')]
-    public function test_flash_throws_if_session_not_started(): void
+    #[TestDox('Test Flash fails if session manager throws')]
+    public function test_flash_relays_session_exception(): void
     {
         $session = new InMemorySessionManager(started: false);
         $flash = new SessionFlashBag($session);
 
         $this->expectException(SessionException::class);
-        $this->expectExceptionMessage('Call start() first');
 
+        // This will call SessionManager::set(), which must throw
         $flash->set('x', 'y');
     }
 }
@@ -82,18 +81,31 @@ final class InMemorySessionManager implements SessionManagerInterface
 
     public function get(string $key, mixed $default = null): mixed
     {
+        if (!$this->started) {
+            throw new SessionException('Session is not started. Call start() first.');
+        }
+
         return $this->data[$key] ?? $default;
     }
 
     public function set(string $key, mixed $value): void
     {
+        if (!$this->started) {
+            throw new SessionException('Session is not started. Call start() first.');
+        }
+
         $this->data[$key] = $value;
     }
 
     public function remove(string $key): void
     {
+        if (!$this->started) {
+            throw new SessionException('Session is not started. Call start() first.');
+        }
+
         unset($this->data[$key]);
     }
+
 
     public function all(): array
     {

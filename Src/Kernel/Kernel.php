@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Design\Kernel;
 
+use Design\Auth\AuthContext;
 use Design\Logging\LoggerInterface;
 use Design\Path\ProjectPaths;
 use Design\Security\Csrf\CsrfTokenManagerInterface;
@@ -29,6 +30,7 @@ final readonly class Kernel
         private SessionManagerInterface $session,
         private SessionFlashBag $flash,
         private CsrfTokenManagerInterface $csrf,
+        private AuthContext $auth,
         private KernelContext $context,
     ) {}
 
@@ -65,5 +67,10 @@ final readonly class Kernel
     public function csrf(): CsrfTokenManagerInterface
     {
         return $this->csrf;
+    }
+
+    public function auth(): AuthContext
+    {
+        return $this->auth;
     }
 }

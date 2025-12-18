@@ -22,6 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: /');
     exit;
 }
+$auth = $kernel->auth();
+
+$kernel->logger()->info('Auth resolved', [
+    'mode' => $auth->mode,
+    'authenticated' => $auth->authenticated,
+]);
 
 $flash = $kernel->flash()->consume('success');
 $csrfToken = $kernel->csrf()->getToken();
@@ -43,5 +49,14 @@ $csrfToken = $kernel->csrf()->getToken();
     <button type="submit">Submit</button>
 </form>
 
+
+<?php if ($auth->authenticated): ?>
+    <p>Welcome <?= htmlspecialchars($auth->displayName ?? 'User') ?></p>
+<?php else: ?>
+    <p>Welcome visitor</p>
+<?php endif; ?>
+
 </body>
 </html>
+
+

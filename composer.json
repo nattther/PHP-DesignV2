@@ -10,7 +10,8 @@
   "autoload": {
     "psr-4": {
       "Design\\": "Src/",
-      "Design\\Settings\\": "Settings/"
+      "Design\\Settings\\": "Settings/",
+      "Design\\Tests\\": "Tests/"
     }
   },
   "scripts": {

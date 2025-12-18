@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
 
+use Design\Auth\AuthMode;
 use Design\Kernel\KernelFactory;
 use Design\Session\Exception\SessionException;
 
@@ -64,6 +65,22 @@ $add(
     !$csrf->isValid('invalid'),
     'invalid rejected'
 );
+
+
+$auth = $kernel->auth();
+
+$add(
+    'Auth mode',
+    true,
+    $auth->mode->value
+);
+
+$add(
+    'Auth authenticated',
+    $auth->authenticated === true || $auth->mode === AuthMode::Public,
+    $auth->authenticated ? 'authenticated' : 'anonymous'
+);
+
 
 
     // Regenerate + Destroy
