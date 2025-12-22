@@ -43,7 +43,7 @@ final class SettingsFactory
 
         $auth = new AuthConfig(
             localAuthEnabled: $isLocal,      // <-- dev déduit ici
-            localForcedRole: Role::Admin,    // <-- forcé en dur
+            localForcedRole: Role::Public,    // <-- forcé en dur
             ssoAdminGroups: $adminGroups,
             ssoPublicGroups: $publicGroups,
         );
