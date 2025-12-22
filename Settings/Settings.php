@@ -7,8 +7,7 @@ namespace Design\Settings;
 use Design\Path\ProjectPaths;
 use Design\Session\Config\SessionConfig;
 use Design\Database\Config\DatabaseConfig;
-use Design\Auth\Config\LocalAuthConfig;
-use Design\Auth\Config\PublicAuthConfig;
+use Design\Auth\Config\AuthConfig;
 
 final readonly class Settings
 {
@@ -16,12 +15,11 @@ final readonly class Settings
         private ProjectPaths $paths,
         private SessionConfig $session,
         private DatabaseConfig $database,
-
+        private AuthConfig $auth,
     ) {}
 
     public function paths(): ProjectPaths { return $this->paths; }
     public function session(): SessionConfig { return $this->session; }
     public function database(): DatabaseConfig { return $this->database; }
-
-
+    public function auth(): AuthConfig { return $this->auth; }
 }

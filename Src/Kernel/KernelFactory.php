@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Design\Kernel;
 
-use Design\Auth\AuthManagerFactory;
+
 use Design\Database\Initializer\DatabaseInitializerFactory;
 use Design\Logging\LoggerFactory;
 use Design\Logging\LoggerInterface;
@@ -15,6 +15,11 @@ use Design\Session\SessionFactory;
 use Design\Session\SessionManagerInterface;
 use Design\Settings\Settings;
 use Design\Settings\SettingsFactory;
+use Design\Auth\AuthContextFactory;
+use Design\Auth\Resolver\LocalUserResolver;
+use Design\Auth\Resolver\RoleResolver;
+use Design\Auth\Resolver\SsoUserResolver;
+use Design\Auth\Sso\SsoSessionReader;
 
 /**
  * Creates a Kernel depending on the script type (front/controller/health/cli/job).
@@ -36,28 +41,38 @@ final class KernelFactory
 
         $settings = SettingsFactory::create(server: $server);
 
-        // Logger en premier
         $logger = self::buildLogger($settings);
-        
-        // DB init avec logs    
+
         $initializer = DatabaseInitializerFactory::create(
             $settings->database(),
             $logger->channel('Database')
         );
         $initializer->initialize();
 
-        // Session
         $session = self::buildSession($context, $settings, $logger);
 
         if (!$session->isStarted() && !($session instanceof NoopSessionManager)) {
             $session->start();
         }
 
-
-
-
         $flash = new SessionFlashBag($session);
         $csrf  = CsrfTokenManagerFactory::create($context, $session);
+
+
+$authFactory = new AuthContextFactory(
+    localUserResolver: new LocalUserResolver(),
+    ssoUserResolver: new SsoUserResolver(
+        reader: new SsoSessionReader(),
+        roleResolver: new RoleResolver(),
+    ),
+);
+
+$auth = $authFactory->create(
+    authConfig: $settings->auth(),
+    session: $session,
+    logger: $logger,
+    server: $server,
+);
 
         return new Kernel(
             settings: $settings,
@@ -65,11 +80,10 @@ final class KernelFactory
             session: $session,
             flash: $flash,
             csrf: $csrf,
-
+            auth: $auth,
             context: $context,
         );
     }
-
 
     public static function createForFront(array $server = []): Kernel
     {

@@ -68,18 +68,13 @@ $add(
 
 
 $auth = $kernel->auth();
+$user = $auth->user();
 
-$add(
-    'Auth mode',
-    true,
-    $auth->mode->value
-);
+$add('Auth role', true, $auth->role()->value);
+$add('Auth authenticated', $user->isAuthenticated(), $user->isAuthenticated() ? 'yes' : 'no');
+$add('Auth user id', true, (string)($user->id() ?? 'null'));
+$add('Auth user name', true, (string)($user->name() ?? 'null'));
 
-$add(
-    'Auth authenticated',
-    $auth->authenticated === true || $auth->mode === AuthMode::Public,
-    $auth->authenticated ? 'authenticated' : 'anonymous'
-);
 
 
 

@@ -23,10 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 $auth = $kernel->auth();
+$user = $auth->user();
 
 $kernel->logger()->info('Auth resolved', [
-    'mode' => $auth->mode,
-    'authenticated' => $auth->authenticated,
+    'role' => $auth->role()->value,
+    'authenticated' => $user->isAuthenticated(),
+    'userId' => $user->id(),
 ]);
 
 $flash = $kernel->flash()->consume('success');
@@ -50,12 +52,11 @@ $csrfToken = $kernel->csrf()->getToken();
 </form>
 
 
-<?php if ($auth->authenticated): ?>
-    <p>Welcome <?= htmlspecialchars($auth->displayName ?? 'User') ?></p>
+<?php if ($user->isAuthenticated()): ?>
+    <p>Welcome <?= htmlspecialchars($user->name() ?? 'User') ?></p>
 <?php else: ?>
     <p>Welcome visitor</p>
 <?php endif; ?>
-
 </body>
 </html>
 

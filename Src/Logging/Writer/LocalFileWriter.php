@@ -26,10 +26,13 @@ final class LocalFileWriter implements FileWriterInterface
      */
     public function append(string $filePath, string $content): void
     {
-        $result = @file_put_contents($filePath, $content, FILE_APPEND | LOCK_EX);
+        $result = file_put_contents($filePath, $content, FILE_APPEND | LOCK_EX);
 
         if ($result === false) {
-            throw new LogWriteException("Failed to write log line to: {$filePath}");
+            $error = error_get_last();
+            $msg = $error['message'] ?? 'unknown filesystem error';
+
+            throw new LogWriteException("Failed to write log line to: {$filePath}. OS: {$msg}");
         }
     }
 }
