@@ -27,7 +27,7 @@ final class SettingsFactory
             useStrictMode: true,
         );
 
-        $driver = $_ENV['DB_DRIVER'] ?? 'sqlite';
+        $driver = 'sqlite';
 
         $database = new DatabaseConfig(
             driver: $driver,
