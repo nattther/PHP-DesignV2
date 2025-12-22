@@ -30,7 +30,7 @@ final readonly class Kernel
         private SessionManagerInterface $session,
         private SessionFlashBag $flash,
         private CsrfTokenManagerInterface $csrf,
-        private AuthContext $auth,
+
         private KernelContext $context,
     ) {}
 
@@ -69,8 +69,5 @@ final readonly class Kernel
         return $this->csrf;
     }
 
-    public function auth(): AuthContext
-    {
-        return $this->auth;
-    }
+
 }

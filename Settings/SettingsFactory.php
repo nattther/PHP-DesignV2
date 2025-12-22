@@ -7,6 +7,9 @@ namespace Design\Settings;
 use Design\Path\ProjectPathsFactory;
 use Design\Session\Config\SessionConfig;
 use Design\Database\Config\DatabaseConfig;
+use Design\Auth\Config\LocalAuthConfig;
+use Design\Auth\Config\PublicAuthConfig;
+use Design\Auth\Role;
 
 final class SettingsFactory
 {
@@ -25,7 +28,6 @@ final class SettingsFactory
             useStrictMode: true,
         );
 
-        // ---- DATABASE ----
         $driver = $_ENV['DB_DRIVER'] ?? 'sqlite';
 
         $database = new DatabaseConfig(
@@ -35,10 +37,13 @@ final class SettingsFactory
             databasePath: $paths->rootPath . '/Settings/design.sqlite',
         );
 
+
+
         return new Settings(
             paths: $paths,
             session: $session,
             database: $database,
+
         );
     }
 }

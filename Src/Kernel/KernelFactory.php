@@ -53,13 +53,8 @@ final class KernelFactory
             $session->start();
         }
 
-        // Auth
-        $auth = AuthManagerFactory::create($logger)->resolve();
 
-        $logger->channel('Auth')->info('Auth resolved', [
-            'mode' => $auth->mode,
-            'authenticated' => $auth->authenticated,
-        ]);
+
 
         $flash = new SessionFlashBag($session);
         $csrf  = CsrfTokenManagerFactory::create($context, $session);
@@ -70,7 +65,7 @@ final class KernelFactory
             session: $session,
             flash: $flash,
             csrf: $csrf,
-            auth: $auth,
+
             context: $context,
         );
     }
