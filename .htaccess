@@ -1,11 +1,16 @@
 Options -Indexes
 ServerSignature Off
+
 RewriteEngine On
 
-# Endpoint health (AVANT le router)
+# ----------------------------------------------------------------------------
+# 1) Health endpoint (avant tout)
+# ----------------------------------------------------------------------------
 RewriteRule ^health/?$ health.php [L]
 
-# Bloquer l'accès web aux dossiers sensibles
+# ----------------------------------------------------------------------------
+# 2) Bloquer l'accès web aux dossiers sensibles (adapte selon ton arbo)
+# ----------------------------------------------------------------------------
 RewriteRule ^(Settings|Src|vendor|Tests|Logs)(/|$) - [F,L]
 
 # Bloquer quelques fichiers sensibles
@@ -19,8 +24,30 @@ RewriteRule (^|/)\. - [F,L]
   Header set X-Robots-Tag "noindex, nofollow, nosnippet, noarchive"
 </IfModule>
 
-# Router tout vers index.php si ce n'est pas un fichier réel
+# ----------------------------------------------------------------------------
+# 3) Laisser passer les fichiers/dossiers réels (assets, images, etc.)
+# ----------------------------------------------------------------------------
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
-RewriteRule ^ index.php [L]
+
+# ----------------------------------------------------------------------------
+# 4) Clean routing (strict allow-list)
+# ----------------------------------------------------------------------------
+# /page/<name>  -> index.php?page=<name>
+RewriteRule ^page/([A-Za-z0-9_-]+)/?$ index.php?page=$1 [L,QSA]
+
+# /admin/<name> -> index.php?admin_page=<name>
+RewriteRule ^admin/([A-Za-z0-9_-]+)/?$ index.php?admin_page=$1 [L,QSA]
+
+# ----------------------------------------------------------------------------
+# 5) Aliases explicites (facultatif)
+# ----------------------------------------------------------------------------
+RewriteRule ^accueil/?$ index.php?page=home [L,QSA]
+RewriteRule ^contact/?$ index.php?page=contact [L,QSA]
+RewriteRule ^user/?$ index.php?admin_page=users [L,QSA]
+
+# ----------------------------------------------------------------------------
+# 6) Catch-all -> router
+# ----------------------------------------------------------------------------
+RewriteRule ^ index.php [L,QSA]

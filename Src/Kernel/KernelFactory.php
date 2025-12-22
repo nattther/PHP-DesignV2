@@ -59,20 +59,20 @@ final class KernelFactory
         $csrf  = CsrfTokenManagerFactory::create($context, $session);
 
 
-$authFactory = new AuthContextFactory(
-    localUserResolver: new LocalUserResolver(),
-    ssoUserResolver: new SsoUserResolver(
-        reader: new SsoSessionReader(),
-        roleResolver: new RoleResolver(),
-    ),
-);
+        $authFactory = new AuthContextFactory(
+            localUserResolver: new LocalUserResolver(),
+            ssoUserResolver: new SsoUserResolver(
+                reader: new SsoSessionReader(),
+                roleResolver: new RoleResolver(),
+            ),
+        );
 
-$auth = $authFactory->create(
-    authConfig: $settings->auth(),
-    session: $session,
-    logger: $logger,
-    server: $server,
-);
+        $auth = $authFactory->create(
+            authConfig: $settings->auth(),
+            session: $session,
+            logger: $logger,
+            server: $server,
+        );
 
         return new Kernel(
             settings: $settings,
