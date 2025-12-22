@@ -22,7 +22,7 @@ final class LocalUserResolver
         }
 
         $role = $authConfig->localForcedRole;
-
+          $logger->channel('Auth')->info('Local user authenticated');
         return new LocalUser($role);
     }
 
