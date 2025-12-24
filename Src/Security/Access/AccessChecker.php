@@ -23,11 +23,7 @@ final class AccessChecker
 
     private function assertAdmin(): void
     {
-        // adapte ici si ton role est un enum
-        $roleValue = (string) ($this->auth->role()->value ?? '');
-        $isAdmin = ($roleValue === 'admin' || $roleValue === 'ADMIN');
-
-        if (!$isAdmin) {
+        if (!$this->auth->role()->isAdmin()) {
             throw new ForbiddenHttpException('This page is restricted to administrators.');
         }
     }

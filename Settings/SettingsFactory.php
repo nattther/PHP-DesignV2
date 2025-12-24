@@ -9,6 +9,7 @@ use Design\Session\Config\SessionConfig;
 use Design\Database\Config\DatabaseConfig;
 use Design\Auth\Config\AuthConfig;
 use Design\Auth\Role\Role;
+use Design\Routing\ViewPaths;
 
 final class SettingsFactory
 {
@@ -43,16 +44,24 @@ final class SettingsFactory
 
         $auth = new AuthConfig(
             localAuthEnabled: $isLocal,      // <-- dev déduit ici
-            localForcedRole: Role::Public,    // <-- forcé en dur
+            localForcedRole: Role::Admin,    // <-- forcé en dur
             ssoAdminGroups: $adminGroups,
             ssoPublicGroups: $publicGroups,
         );
+
+                $views = new ViewPaths(
+            publicViewsRootPath: $paths->publicPath . DIRECTORY_SEPARATOR . 'public_views',
+            adminViewsRootPath:  $paths->publicPath . DIRECTORY_SEPARATOR . 'admin_views',
+            errorViewsRootPath:  $paths->publicPath . DIRECTORY_SEPARATOR . 'public_views' . DIRECTORY_SEPARATOR . 'errors',
+        );
+
 
         return new Settings(
             paths: $paths,
             session: $session,
             database: $database,
             auth: $auth,
+            views: $views, 
         );
     }
 
