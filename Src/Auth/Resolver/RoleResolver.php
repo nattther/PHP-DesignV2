@@ -9,23 +9,22 @@ use Design\Auth\Role\Role;
 
 final class RoleResolver
 {
-    /**
-     * @param array<string,int> $groupsDisplayName
-     */
-    public function fromGroups(array $groupsDisplayName, AuthConfig $authConfig): Role
+
+    public function fromGroups(array $userGroupsByName, AuthConfig $authConfig): Role
+
     {
-        foreach ($authConfig->ssoAdminGroups as $g) {
-            if (isset($groupsDisplayName[$g])) {
+        $hasPublic = false;
+
+        foreach ($userGroupsByName as $groupName => $_) {
+            if ($authConfig->isAdminGroup($groupName)) {
                 return Role::Admin;
             }
-        }
 
-        foreach ($authConfig->ssoPublicGroups as $g) {
-            if (isset($groupsDisplayName[$g])) {
-                return Role::Public;
+            if ($authConfig->isPublicGroup($groupName)) {
+                $hasPublic = true;
             }
         }
 
-        return Role::Forbidden;
+        return $hasPublic ? Role::Public : Role::Forbidden;
     }
 }

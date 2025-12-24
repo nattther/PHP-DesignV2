@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Design\Auth;
@@ -18,14 +17,17 @@ final class AuthContextFactory
         private SsoUserResolver $ssoUserResolver,
     ) {}
 
+    /**
+     * @param array<string, mixed> $server
+     */
     public function create(
         AuthConfig $authConfig,
         SessionManagerInterface $session,
         LoggerInterface $logger,
-        array $server = [],
-    ): AuthContext {
-        $server = $server ?: ($_SERVER ?? []);
-
+        array $server,
+    ): AuthContext 
+    
+    {
         $localUser = $this->localUserResolver->resolve($authConfig, $logger, $server);
         if ($localUser !== null) {
             return new AuthContext($localUser);

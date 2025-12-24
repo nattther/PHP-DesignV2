@@ -18,4 +18,24 @@ final readonly class AuthConfig
         public array $ssoAdminGroups,
         public array $ssoPublicGroups,
     ) {}
+
+    public function canUseLocalAuth(): bool
+    {
+        return $this->localAuthEnabled;
+    }
+
+    public function localRole(): Role
+    {
+        return $this->localForcedRole;
+    }
+
+    public function isAdminGroup(string $group): bool
+    {
+        return in_array($group, $this->ssoAdminGroups, true);
+    }
+
+    public function isPublicGroup(string $group): bool
+    {
+        return in_array($group, $this->ssoPublicGroups, true);
+    }
 }

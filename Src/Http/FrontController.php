@@ -24,7 +24,6 @@ final class FrontController
         private readonly AccessChecker $accessChecker,
         private readonly AdminLayoutDecorator $layoutDecorator,
         private readonly ViewDataFactory $viewDataFactory,
-        private readonly Settings $settings,
     ) {}
 
     /**
@@ -32,9 +31,8 @@ final class FrontController
      */
     public function handle(Request $request): Response
     {
-        $views = $this->settings->views();
+        $views = $this->kernel->settings()->views();
         $data  = $this->viewDataFactory->create($this->kernel, $request);
-
         try {
             $resolvedView = $this->resolver->resolve($request);
             $this->accessChecker->assertCanAccess($resolvedView);

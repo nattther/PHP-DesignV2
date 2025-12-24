@@ -28,7 +28,6 @@ final class FrontControllerFactory
             accessChecker: new AccessChecker($kernel->auth()),
             layoutDecorator: new AdminLayoutDecorator($kernel->auth(), $views->adminViewsRootPath()),
             viewDataFactory: new ViewDataFactory(),
-            settings: $kernel->settings(),
         );
     }
 }

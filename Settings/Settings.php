@@ -17,12 +17,12 @@ final readonly class Settings
         private SessionConfig $session,
         private DatabaseConfig $database,
         private AuthConfig $auth,
-        private ViewPaths $views, // ✅
+        private ViewPaths $views, 
     ) {}
 
     public function paths(): ProjectPaths { return $this->paths; }
     public function session(): SessionConfig { return $this->session; }
     public function database(): DatabaseConfig { return $this->database; }
     public function auth(): AuthConfig { return $this->auth; }
-    public function views(): ViewPaths { return $this->views; } // ✅
+    public function views(): ViewPaths { return $this->views; }
 }
