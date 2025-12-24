@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Design\Error\Handler;
 
+use Design\Error\ErrorType\AccessDeniedMapper;
 use Design\Error\ErrorType\BadRouteMapper;
+use Design\Error\ErrorType\CsrfInvalidMapper;
 use Design\Error\ErrorType\Default500Mapper;
 use Design\Error\ErrorType\RouteNotFoundMapper;
 use Design\Error\Render\PhpErrorRenderer;
@@ -20,7 +22,9 @@ final class HttpErrorHandlerFactory
             mappers: [
                 new BadRouteMapper(),
                 new RouteNotFoundMapper(),
-                new Default500Mapper(), 
+                new AccessDeniedMapper(),
+                new CsrfInvalidMapper(),   // ✅ add
+                new Default500Mapper(),
             ],
         );
     }

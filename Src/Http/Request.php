@@ -43,4 +43,12 @@ final readonly class Request
         $value = $this->post[$key] ?? null;
         return is_string($value) && $value !== '' ? $value : null;
     }
+
+    public function header(string $name): ?string
+{
+    $key = 'HTTP_' . strtoupper(str_replace('-', '_', $name));
+    $value = $this->server[$key] ?? null;
+
+    return is_string($value) && $value !== '' ? $value : null;
+}
 }

@@ -10,35 +10,31 @@ use Design\Routing\Exception\RouteNotFound;
 
 final readonly class LegacyDispatcher
 {
-    public function __construct(private AppPaths $paths){}
+    public function __construct(private AppPaths $paths) {}
 
-    public function dispatch(Request $request): void
+    public function resolve(Request $request): ResolvedRoute
     {
         if ($request->isPost() && ($ajax = $request->postString('ajax')) !== null) {
-            require $this->file($this->paths->ajaxDir(), $ajax);
-            return;
+            return ResolvedRoute::ajax($this->file($this->paths->ajaxDir(), $ajax));
         }
 
         if (($action = $request->queryString('action')) !== null) {
-            require $this->file($this->paths->controllerDir(), $action);
-            return;
+            return ResolvedRoute::action($this->file($this->paths->controllerDir(), $action));
         }
 
         if (($adminPage = $request->queryString('admin_page')) !== null) {
-            require $this->file($this->paths->adminViewsDir(), $adminPage);
-            return;
+            return ResolvedRoute::adminView($this->file($this->paths->adminViewsDir(), $adminPage));
         }
 
         if (($page = $request->queryString('page')) !== null) {
-            require $this->file($this->paths->publicViewsDir(), $page);
-            return;
+            return ResolvedRoute::publicView($this->file($this->paths->publicViewsDir(), $page));
         }
 
         if (($route = $request->queryString('route')) !== null) {
             throw new RouteNotFound("No route matched: {$route}");
         }
 
-        require $this->file($this->paths->publicViewsDir(), 'home');
+        return ResolvedRoute::publicView($this->file($this->paths->publicViewsDir(), 'home'));
     }
 
     private function file(string $dir, string $name): string
