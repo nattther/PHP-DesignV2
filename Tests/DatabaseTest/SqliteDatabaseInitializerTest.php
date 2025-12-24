@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Design\Tests\DatabaseTest;
 
-use Design\Database\Config\DatabaseConfig;
+use Design\Database\Config\DatabasePaths;
 use Design\Database\Initializer\SqliteDatabaseInitializer;
 use Design\Database\Initializer\NoopDatabaseInitializer;
+use PHPUnit\Framework\TestCase;
+use Design\Tests\Support\InMemoryWriter;
 use Design\Logging\FileLogger;
 use Design\Logging\LineFormatter\SimpleLogLineFormatter;
 use Design\Logging\Path\FilePathResolver;
@@ -15,8 +17,6 @@ use Design\Logging\Policy\DefaultChannelPolicy;
 use Design\Logging\Context\JsonContextEncoder;
 use Design\Logging\ValueObject\ChannelMap;
 use Design\Tests\Support\FakeClock;
-use Design\Tests\Support\InMemoryWriter;
-use PHPUnit\Framework\TestCase;
 
 final class SqliteDatabaseInitializerTest extends TestCase
 {
@@ -25,23 +25,20 @@ final class SqliteDatabaseInitializerTest extends TestCase
         [$tmp, $logger, $writer] = $this->buildLogger();
 
         $settingsDir = $tmp . '/Settings';
-        $dbDir = $tmp . '/var';
-
         mkdir($settingsDir, 0775, true);
 
-        $cleanDb = $settingsDir . '/clean_test.sqlite';
-        $targetDb = $dbDir . '/test.sqlite';
+        $paths = new DatabasePaths(
+            settingsDirPath: $settingsDir,
+            projectName: 'test',
+            sqliteFileName: 'test.sqlite',
+        );
+
+        $cleanDb  = $paths->cleanSqliteDatabasePath();   // .../Settings/clean_test.sqlite
+        $targetDb = $paths->sqliteDatabasePath();        // .../Settings/test.sqlite
 
         file_put_contents($cleanDb, 'CLEAN_DB');
 
-        $config = new DatabaseConfig(
-            driver: 'sqlite',
-            databasePath: $targetDb,
-            projectName: 'test',
-            settingsDir: $settingsDir,
-        );
-
-        $initializer = new SqliteDatabaseInitializer($config, $logger);
+        $initializer = new SqliteDatabaseInitializer($paths, $logger);
         $initializer->initialize();
 
         self::assertFileExists($targetDb);
@@ -58,25 +55,21 @@ final class SqliteDatabaseInitializerTest extends TestCase
         [$tmp, $logger, $writer] = $this->buildLogger();
 
         $settingsDir = $tmp . '/Settings';
-        $dbDir = $tmp . '/var';
-
         mkdir($settingsDir, 0775, true);
-        mkdir($dbDir, 0775, true);
 
-        $cleanDb = $settingsDir . '/clean_test.sqlite';
-        $targetDb = $dbDir . '/test.sqlite';
+        $paths = new DatabasePaths(
+            settingsDirPath: $settingsDir,
+            projectName: 'test',
+            sqliteFileName: 'test.sqlite',
+        );
+
+        $cleanDb  = $paths->cleanSqliteDatabasePath();
+        $targetDb = $paths->sqliteDatabasePath();
 
         file_put_contents($cleanDb, 'CLEAN_DB');
         file_put_contents($targetDb, 'EXISTING_DB');
 
-        $config = new DatabaseConfig(
-            driver: 'sqlite',
-            databasePath: $targetDb,
-            projectName: 'test',
-            settingsDir: $settingsDir,
-        );
-
-        $initializer = new SqliteDatabaseInitializer($config, $logger);
+        $initializer = new SqliteDatabaseInitializer($paths, $logger);
         $initializer->initialize();
 
         self::assertSame('EXISTING_DB', file_get_contents($targetDb));
@@ -90,9 +83,7 @@ final class SqliteDatabaseInitializerTest extends TestCase
     public function test_noop_initializer_does_nothing(): void
     {
         $initializer = new NoopDatabaseInitializer();
-
         $initializer->initialize();
-
         self::assertTrue(true);
     }
 
@@ -104,7 +95,7 @@ final class SqliteDatabaseInitializerTest extends TestCase
         $tmp = sys_get_temp_dir() . '/db_init_' . bin2hex(random_bytes(4));
         mkdir($tmp, 0775, true);
 
-        $logsDir = LogsDirectory::fromPath($tmp . '/Logs');
+        $logsDir  = LogsDirectory::fromPath($tmp . '/Logs');
         $resolver = new FilePathResolver($logsDir, ChannelMap::defaults());
 
         $writer = new InMemoryWriter();

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Design\Settings;
@@ -8,9 +9,9 @@ use Design\Auth\Role\Role;
 use Design\Database\Config\DatabaseConfig;
 use Design\Database\Config\DatabasePaths;
 use Design\Environment\EnvironmentDetector;
+use Design\Path\AppPaths;
 use Design\Path\ProjectPaths;
 use Design\Path\ProjectPathsFactory;
-use Design\Routing\ViewPaths;
 use Design\Session\Config\SessionConfig;
 
 final class SettingsFactory
@@ -20,23 +21,24 @@ final class SettingsFactory
      */
     public static function create(array $server = []): Settings
     {
-        $paths = self::buildProjectPaths($server);
+$paths = self::buildProjectPaths($server);
 
-        $session  = self::buildSessionConfig();
-        $auth     = self::buildAuthConfig($server);
-        $views    = self::buildViewPaths($paths);
-        $database = self::buildDatabaseConfig();
-        $databasePaths = self::buildDatabasePaths($paths, $database);
+$appPaths = new AppPaths($paths);
 
-        return new Settings(
-            paths: $paths,
-            session: $session,
-            database: $database,
-            databasePaths: $databasePaths,
-            auth: $auth,
-            views: $views,
-        );
-    }
+$session  = self::buildSessionConfig();
+$auth     = self::buildAuthConfig($server);
+$database = self::buildDatabaseConfig();
+$databasePaths = self::buildDatabasePaths($paths, $database);
+
+return new Settings(
+    paths: $paths,
+    appPaths: $appPaths,
+    session: $session,
+    database: $database,
+    databasePaths: $databasePaths,
+    auth: $auth,
+);
+}
 
     /**
      * @param array<string, mixed> $server
@@ -99,15 +101,4 @@ final class SettingsFactory
             ssoPublicGroups: $publicGroups,
         );
     }
-
-    private static function buildViewPaths(ProjectPaths $paths): ViewPaths
-    {
-        return new ViewPaths(
-            publicViewsRootPath: $paths->publicPath . DIRECTORY_SEPARATOR . 'public_views',
-            adminViewsRootPath:  $paths->publicPath . DIRECTORY_SEPARATOR . 'admin_views',
-            errorViewsRootPath:  $paths->publicPath . DIRECTORY_SEPARATOR . 'public_views' . DIRECTORY_SEPARATOR . 'errors',
-        );
-    }
-
-
 }

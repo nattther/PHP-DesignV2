@@ -29,30 +29,29 @@ final readonly class Kernel
         private AuthContext $auth,
     ) {}
 
-    public function settings(): Settings { return $this->settings; }
-    public function logger(): LoggerInterface { return $this->logger; }
-    public function session(): SessionManagerInterface { return $this->session; }
-    public function flash(): SessionFlashBag { return $this->flash; }
-    public function csrf(): CsrfTokenManagerInterface { return $this->csrf; }
-    public function auth(): AuthContext { return $this->auth; }
-
-
-     public function frontController(): FrontController
+    public function settings(): Settings
     {
-        $views = $this->settings()->views();
-
-        $resolver = new ViewPathResolver(
-            $views->publicViewsRootPath(),
-            $views->adminViewsRootPath(),
-        );
-
-        return new FrontController(
-            kernel: $this,
-            resolver: $resolver,
-            renderer: new CompositePhpRenderer(),
-            accessChecker: new AccessChecker($this->auth()),
-            layoutDecorator: new AdminLayoutDecorator($this->auth(), $views->adminViewsRootPath()),
-            viewDataFactory: new ViewDataFactory(),
-        );
+        return $this->settings;
     }
+    public function logger(): LoggerInterface
+    {
+        return $this->logger;
+    }
+    public function session(): SessionManagerInterface
+    {
+        return $this->session;
+    }
+    public function flash(): SessionFlashBag
+    {
+        return $this->flash;
+    }
+    public function csrf(): CsrfTokenManagerInterface
+    {
+        return $this->csrf;
+    }
+    public function auth(): AuthContext
+    {
+        return $this->auth;
+    }
+
 }

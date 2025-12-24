@@ -50,4 +50,5 @@ RewriteRule ^user/?$ index.php?admin_page=users [L,QSA]
 # ----------------------------------------------------------------------------
 # 6) Catch-all -> router
 # ----------------------------------------------------------------------------
-RewriteRule ^ index.php [L,QSA]
+
+RewriteRule ^(.+)$ index.php?route=$1 [L,QSA]

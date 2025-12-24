@@ -3,13 +3,9 @@ declare(strict_types=1);
 
 namespace Design\Kernel;
 
-use Design\Auth\AuthContext;
-use Design\Auth\AuthContextFactory;
+
 use Design\Auth\AuthModuleFactory;
-use Design\Auth\Resolver\LocalUserResolver;
-use Design\Auth\Resolver\RoleResolver;
-use Design\Auth\Resolver\SsoUserResolver;
-use Design\Auth\Sso\SsoSessionReader;
+
 use Design\Database\Initializer\DatabaseInitializerFactory;
 use Design\Logging\LoggerFactory;
 use Design\Logging\LoggerInterface;
@@ -33,6 +29,7 @@ final class KernelFactory
         $settings = SettingsFactory::create(server: $server);
         $logger   = self::buildLogger($settings);
 
+
         $initializer = DatabaseInitializerFactory::create(
             config: $settings->database(),
             paths: $settings->databasePaths(),
@@ -51,11 +48,11 @@ final class KernelFactory
         $flash = new SessionFlashBag($session);
         $csrf  = CsrfTokenManagerFactory::create($session);
 
-$auth = AuthModuleFactory::createAuthContext(
-    authConfig: $settings->auth(),
-    session: $session,
-    logger: $logger,
-    server: $server,
+        $auth = AuthModuleFactory::createAuthContext(
+            authConfig: $settings->auth(),
+            session: $session,
+            logger: $logger,
+            server: $server,
 );
 
         return new Kernel(
