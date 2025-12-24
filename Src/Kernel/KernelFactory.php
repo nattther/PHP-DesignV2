@@ -34,9 +34,11 @@ final class KernelFactory
         $logger   = self::buildLogger($settings);
 
         $initializer = DatabaseInitializerFactory::create(
-            $settings->database(),
-            $logger->channel('Database')
+            config: $settings->database(),
+            paths: $settings->databasePaths(),
+            logger: $logger->channel('Database'),
         );
+
         $initializer->initialize();
 
         $isHttp  = self::isHttpContext($server);

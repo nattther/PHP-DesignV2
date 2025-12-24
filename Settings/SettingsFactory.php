@@ -6,6 +6,7 @@ namespace Design\Settings;
 use Design\Auth\Config\AuthConfig;
 use Design\Auth\Role\Role;
 use Design\Database\Config\DatabaseConfig;
+use Design\Database\Config\DatabasePaths;
 use Design\Environment\EnvironmentDetector;
 use Design\Path\ProjectPaths;
 use Design\Path\ProjectPathsFactory;
@@ -22,14 +23,16 @@ final class SettingsFactory
         $paths = self::buildProjectPaths($server);
 
         $session  = self::buildSessionConfig();
-        $database = self::buildDatabaseConfig($paths);
         $auth     = self::buildAuthConfig($server);
         $views    = self::buildViewPaths($paths);
+        $database = self::buildDatabaseConfig();
+        $databasePaths = self::buildDatabasePaths($paths, $database);
 
         return new Settings(
             paths: $paths,
             session: $session,
             database: $database,
+            databasePaths: $databasePaths,
             auth: $auth,
             views: $views,
         );
@@ -57,17 +60,26 @@ final class SettingsFactory
         );
     }
 
-    private static function buildDatabaseConfig(ProjectPaths $paths): DatabaseConfig
-    {
-        $driver = 'sqlite';
 
+    private static function buildDatabaseConfig(): DatabaseConfig
+    {
         return new DatabaseConfig(
-            driver: $driver,
+            driver: 'sqlite',
             projectName: 'design',
-            settingsDir: $paths->rootPath . '/Settings',
-            databasePath: $paths->rootPath . '/Settings/design.sqlite',
+            sqliteFileName: 'design.sqlite',
         );
     }
+
+    private static function buildDatabasePaths(ProjectPaths $paths, DatabaseConfig $database): DatabasePaths
+    {
+        return new DatabasePaths(
+            settingsDirPath: $paths->rootPath . DIRECTORY_SEPARATOR . 'Settings',
+            projectName: $database->projectName,
+            sqliteFileName: $database->sqliteFileName,
+        );
+    }
+
+
 
     /**
      * @param array<string, mixed> $server
