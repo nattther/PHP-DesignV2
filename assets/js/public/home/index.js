@@ -1,0 +1,1 @@
+"use strict";(()=>{document.addEventListener("DOMContentLoaded",()=>{let e=document.querySelector("[data-burger]"),t=document.querySelector("[data-menu]");!e||!t||e.addEventListener("click",()=>{t.classList.toggle("hidden")})});})();

@@ -25,6 +25,11 @@ final readonly class LayoutRenderer
         $this->assertFile($viewPath);
         $this->assertFile($footer);
 
+          $vars += [
+        'auth' => $this->auth,
+        'baseUrl' => $this->paths->baseUrl(),
+    ];
+
         // Expose variables to the view scope
         extract($vars, EXTR_SKIP);
 

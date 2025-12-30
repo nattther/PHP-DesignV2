@@ -3,3 +3,4 @@
 Logs/*.log
 .env
 .DS_Store
+/Typescript_Node/node_modules
