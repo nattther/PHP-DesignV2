@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Brand tokens (RGB channels so Tailwind's /<alpha-value> works) */
+:root {
+  /* Brand: primary (Lyreco Blue), secondary (Lyreco Green) */
+  --primary: 45 46 135;              /* #2d2e87 */
+  --primary-foreground: 255 255 255; /* text on primary */
+  --primary-ring: 45 46 135;         /* ring color on focus */
+
+  --secondary: 154 195 28;           /* #9ac31c */
+  --secondary-foreground: 1 22 39;   /* dark readable text */
+
+  /* Surfaces */
+  --surface: 255 255 255;
+  --surface-foreground: 1 22 39;
+  --surface-muted: 246 247 248;      /* light cards */
+  --surface-border: 212 218 224;
+
+  /* Keep your legacy variables for compatibility (optional) */
+  --lyreco-green: 154, 195, 28;
+  --lyreco-green-hover: 124, 158, 22;
+  --lyreco-blue: 45, 46, 135;
+  --lyreco-blue-hover: 18, 19, 75;
+  --lyreco-dark: 1, 22, 39;
+  --lyreco-dark-gray: 81, 97, 111;
+  --lyreco-dark-medium-gray: 62, 67, 71;
+  --lyreco-gray: 159, 172, 182;
+  --lyreco-light-gray: 212, 218, 224;
+  --lyreco-dark-white: 246, 247, 248;
+  --lyreco-white: 255, 255, 255;
+
+  --lyreco-error: 231, 29, 54;
+  --lyreco-information: 93, 150, 198;
+  --lyreco-success: 132, 185, 28;
+  --lyreco-warning: 239, 157, 17;
+
+  --lyreco-error-dark: 170, 10, 10;
+  --lyreco-information-dark: 5, 80, 143;
+  --lyreco-success-dark: 25, 96, 0;
+  --lyreco-warning-dark: 149, 44, 0;
+
+  --lyreco-error-light: 255, 243, 242;
+  --lyreco-information-light: 231, 245, 248;
+  --lyreco-success-light: 234, 246, 237;
+  --lyreco-warning-light: 255, 247, 233;
+
+  --main-font-family: "Noto Sans";
+}
+
+/* Optional: derive subtle hovers with color-mix (modern browsers) */
+@supports (color: color-mix(in oklch, white 10%, black)) {
+  :root {
+    /* darker/lighter variants used in component hovers */
+    --primary-hover: color-mix(in oklch, rgb(var(--primary)) 90%, black);
+    --secondary-hover: color-mix(in oklch, rgb(var(--secondary)) 90%, black);
+  }
+}
+
+@layer base {
+  html { font-family: "Noto Sans", system-ui, sans-serif; }
+  body {
+    background-image: radial-gradient(
+      rgba(var(--lyreco-gray), .1) 70%, rgb(var(--lyreco-dark-white)) 15%
+    );
+    background-size: 5px 5px;
+    color: rgb(var(--surface-foreground));
+    background-color: rgb(var(--surface));
+  }
+}
+
