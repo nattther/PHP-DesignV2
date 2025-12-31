@@ -13,7 +13,7 @@ $cssUrl  = $assets->cssUrl('output.css');
 $cssVer  = is_file($cssFile) ? (string) filemtime($cssFile) : '1';
 
 $pageTitle = $viewName !== '' ? ucwords(str_replace(['-', '_'], ' ', $viewName)) : 'Accueil';
-$fullTitle = $pageTitle . ' • ' . $appName;
+$fullTitle = $appName . ' | ' . $pageTitle;
 
 $faviconUrl = $assets->assetUrl($faviconRelative);
 

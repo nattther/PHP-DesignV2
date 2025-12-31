@@ -4,53 +4,49 @@ ServerSignature Off
 RewriteEngine On
 
 # ----------------------------------------------------------------------------
-# 1) Health endpoint (avant tout)
+# 1) Health endpoint
 # ----------------------------------------------------------------------------
 RewriteRule ^health/?$ health.php [L]
 
 # ----------------------------------------------------------------------------
-# 2) Bloquer l'accès web aux dossiers sensibles (adapte selon ton arbo)
+# 2) Bloquer dossiers sensibles
 # ----------------------------------------------------------------------------
-RewriteRule ^(Settings|Src|vendor|Tests|Logs)(/|$) - [F,L]
-
-# Bloquer quelques fichiers sensibles
+RewriteRule ^(Settings|Src|vendor|Tests|Logs|Typescript_Node)(/|$) - [F,L]
 RewriteRule ^(\.env|composer\.json|composer\.lock|phpunit\.xml)(/|$) - [F,L]
-
-# Bloquer les dotfiles (.git, etc.)
 RewriteRule (^|/)\. - [F,L]
 
-# Empêcher l'indexation (en + de robots.txt)
 <IfModule mod_headers.c>
   Header set X-Robots-Tag "noindex, nofollow, nosnippet, noarchive"
 </IfModule>
 
 # ----------------------------------------------------------------------------
-# 3) Laisser passer les fichiers/dossiers réels (assets, images, etc.)
+# 3) BLOQUER l'accès direct aux vues (IMPORTANT)
 # ----------------------------------------------------------------------------
-# Allow only entry points
-RewriteRule ^index\.php$ - [L]
-RewriteRule ^health\.php$ - [L]
+RewriteRule ^public/(admin_views|public_views)/ - [F,L]
 
-# Block any other direct .php access
-RewriteRule \.php$ - [F,L]
 # ----------------------------------------------------------------------------
-# 4) Clean routing (strict allow-list)
+# 4) BLOQUER tout accès direct à un .php (sauf entrypoints)
+#    THE_REQUEST = requête du navigateur, évite de casser les rewrites internes
 # ----------------------------------------------------------------------------
-# /page/<name>  -> index.php?page=<name>
+RewriteCond %{THE_REQUEST} \s/+([^\s?]+)\.php[\s?] [NC]
+RewriteCond %1 !^(index|health)$ [NC]
+RewriteRule ^ - [F,L]
+
+# ----------------------------------------------------------------------------
+# 5) Laisser passer fichiers/dossiers réels (assets, images, etc.)
+# ----------------------------------------------------------------------------
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# ----------------------------------------------------------------------------
+# 6) Clean routing
+# ----------------------------------------------------------------------------
 RewriteRule ^page/([A-Za-z0-9_-]+)/?$ index.php?page=$1 [L,QSA]
-
-# /admin/<name> -> index.php?admin_page=<name>
 RewriteRule ^admin/([A-Za-z0-9_-]+)/?$ index.php?admin_page=$1 [L,QSA]
 
-# ----------------------------------------------------------------------------
-# 5) Aliases explicites (facultatif)
-# ----------------------------------------------------------------------------
 RewriteRule ^accueil/?$ index.php?page=home [L,QSA]
 RewriteRule ^contact/?$ index.php?page=contact [L,QSA]
 RewriteRule ^user/?$ index.php?admin_page=users [L,QSA]
-
-# ----------------------------------------------------------------------------
-# 6) Catch-all -> router
-# ----------------------------------------------------------------------------
 
 RewriteRule ^(.+)$ index.php?route=$1 [L,QSA]
