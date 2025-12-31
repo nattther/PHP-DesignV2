@@ -18,7 +18,7 @@ $fullTitle = $appName . ' | ' . $pageTitle;
 $faviconUrl = $assets->assetUrl($faviconRelative);
 
 // Logo
-$logoUrl = $assets->assetUrl('assets/img/logo/Lyreco_Logo.webp');
+$logoUrl = $assets->assetUrl('img/logo/Lyreco_Logo.webp');
 
 // Current path for active nav
 $currentPath = (string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
@@ -29,9 +29,7 @@ $navItems = [
     ['href' => '/contact', 'label' => 'Contact'],
 ];
 
-if ($auth->isAdmin()) {
-    $navItems[] = ['href' => '/admin', 'label' => 'Admin'];
-}
+
 
 $normalize = static fn(string $href): string => '/' . ltrim((string) parse_url($href, PHP_URL_PATH), '/');
 
@@ -114,7 +112,11 @@ $renderNavLink = static function (array $item, bool $mobile = false) use ($baseU
         <div class="leading-tight">
           <div class="text-base font-extrabold tracking-tight text-lyreco-blue group-hover:text-lyreco-blue-hover">
             <?= htmlspecialchars($appName) ?>
+                       <span class="text-[11px] font-semibold text-lyreco-dark-gray translate-y-[1px]">
+                by Hive
+              </span>
           </div>
+
           <div class="text-sm text-lyreco-dark-gray">
             <?= htmlspecialchars($pageTitle) ?>
           </div>

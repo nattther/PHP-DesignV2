@@ -101,7 +101,7 @@ return new Settings(
 
         return new AuthConfig(
             localAuthEnabled: $isLocal,
-            localForcedRole: Role::Public,
+            localForcedRole: Role::Admin,
             ssoAdminGroups: $adminGroups,
             ssoPublicGroups: $publicGroups,
         );
