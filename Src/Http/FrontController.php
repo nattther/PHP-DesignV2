@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Design\Http;
 
 use Design\Kernel\Kernel;
+use Design\Path\AssetPaths;
 use Design\Presentation\Layout\LayoutRenderer;
 use Design\Routing\LegacyDispatcher;
 use Design\Security\Access\RouteAccessGuard;
@@ -34,9 +35,13 @@ final readonly class FrontController
             return;
         }
 
+        $viewName = pathinfo($route->path, PATHINFO_FILENAME); // home, about, ...
+
+
         $this->layout->render($route->path, [
-            'kernel' => $this->kernel,
-            'baseUrl' => $this->kernel->settings()->appPaths()->baseUrl(),
+            'kernel'    => $this->kernel, // garde-le si tes views en ont besoin
+            'viewName'  => $viewName,
+            'routeArea' => $route->area ?? 'public',
         ]);
     }
 }

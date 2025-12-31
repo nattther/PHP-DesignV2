@@ -20,6 +20,7 @@ final readonly class ProjectPaths
         public string $publicPath,
         public string $logsPath,
         public string $baseUrl,
+        public string $assetsPath,
     ) {}
 
     /**
@@ -42,13 +43,14 @@ final readonly class ProjectPaths
             $relative = '/' . ltrim($relative, '/');
             $baseUrl = $relative === '/' ? '' : $relative;
         }
-
         return new self(
             rootPath: $root,
             publicPath: $root . '/' . trim($publicDir, '/'),
             logsPath: $root . '/Logs',
             baseUrl: $baseUrl,
+            assetsPath: $root . '/assets', // ✅ assets at root
         );
+
     }
 
     

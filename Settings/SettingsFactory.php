@@ -14,6 +14,7 @@ use Design\Path\ProjectPaths;
 use Design\Path\ProjectPathsFactory;
 use Design\Session\Config\SessionConfig;
 
+
 final class SettingsFactory
 {
     /**
@@ -29,7 +30,10 @@ $session  = self::buildSessionConfig();
 $auth     = self::buildAuthConfig($server);
 $database = self::buildDatabaseConfig();
 $databasePaths = self::buildDatabasePaths($paths, $database);
-
+$app = new AppConfig(
+    name: 'Lyreco',
+    faviconIcoRelativePath: 'assets/img/logo/Lyreco_Logo.ico',
+);
 return new Settings(
     paths: $paths,
     appPaths: $appPaths,
@@ -37,6 +41,7 @@ return new Settings(
     database: $database,
     databasePaths: $databasePaths,
     auth: $auth,
+    app: $app,
 );
 }
 

@@ -19,6 +19,7 @@ final readonly class Settings
         private DatabaseConfig $database,
         private DatabasePaths $databasePaths,
         private AuthConfig $auth,
+        private AppConfig $app,
     ) {}
 
     public function paths(): ProjectPaths { return $this->paths; }
@@ -28,6 +29,7 @@ final readonly class Settings
     public function database(): DatabaseConfig { return $this->database; }
     public function databasePaths(): DatabasePaths { return $this->databasePaths; }
     public function auth(): AuthConfig { return $this->auth; }
+     public function app(): AppConfig { return $this->app; }
 
 
 }
